@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { List, Avatar, Row, Col } from 'antd';
 import Axios from 'axios';
 import SideVideo from './Sections/SideVideo';
+import Subscribe from './Sections/Subscribe';
 
 function VideoDetailPage(props) {
     const [Video,setVideo] = useState([])
@@ -21,6 +22,10 @@ function VideoDetailPage(props) {
             }
         })
     },[])
+
+    
+    if (Video.writer) {
+        const subscribeBtn = Video.writer._id !== localStorage.getItem('userId') && <Subscribe userTo={Video.writer._id} />
     return (
         <Row>
         <Col lg={18} xs={24}>
@@ -28,7 +33,7 @@ function VideoDetailPage(props) {
                 <video style={{ width: '100%' }} src={`http://localhost:5000/${Video.filePath}`} controls></video>
 
                 <List.Item
-                    // actions={[<LikeDislikes video videoId={videoId} userId={localStorage.getItem('userId')}  />, <Subscriber userTo={Video.writer._id} userFrom={localStorage.getItem('userId')} />]}
+                    actions={[subscribeBtn]}
                 >
                     <List.Item.Meta
                         avatar={<Avatar src={Video.writer && Video.writer.image} />}
@@ -46,6 +51,9 @@ function VideoDetailPage(props) {
         </Col>
     </Row>
     )
+    }else {
+        return <h1>Loading...</h1>
+    }
 }
 
 export default VideoDetailPage

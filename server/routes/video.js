@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { Video } = require("../models/Video");
+const { Subscriber } = require("../models/Subscriber");
 const multer = require('multer')
 const { auth } = require("../middleware/auth");
 var ffmpeg = require('fluent-ffmpeg');
@@ -58,6 +59,31 @@ router.post('/uploadVideo', (req,res) => {
     })
 
 })
+router.post('/getSubscriptionVideos', (req,res) => {
+    // 비디오 정보를 저장한다.
+    Subscriber.find({ userFrom: req.body.userFrom })
+    .exec(( err, SubscriberInfo) => {
+        if(err) return res.status(400).send(err);
+
+        let subsvribedUser = [];
+
+        SubscriberInfo.map((Subscriber,index) => {
+            subsvribedUser.push(Subscriber.userTo)
+        })
+
+        Video.find({ writer: { $in: subsvribedUser }})
+        .populate('writer')
+        .exec((err,videos) => {
+            if (err) return res.status(400).send(err)
+            res.status(200).json({ success: true, videos})
+        })
+
+
+    })
+
+})
+
+
 
 router.post('/getVideoDetail', (req,res) => {
     // 비디오 정보를 저장한다.
@@ -98,6 +124,7 @@ router.post('/thumbnail', (req,res) => {
         });
 
 })
+
 
 
 module.exports = router;
