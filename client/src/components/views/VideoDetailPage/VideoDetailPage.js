@@ -3,9 +3,12 @@ import { List, Avatar, Row, Col } from 'antd';
 import Axios from 'axios';
 import SideVideo from './Sections/SideVideo';
 import Subscribe from './Sections/Subscribe';
+import Comment from './Sections/Comment';
+import LikeDislike from './Sections/LikeDislike';
 
 function VideoDetailPage(props) {
     const [Video,setVideo] = useState([])
+    const [comments,setComments] = useState([])
 
     const {match:{params:{videoId}}} = props
 
@@ -21,11 +24,23 @@ function VideoDetailPage(props) {
                 alert('Failed to get video Info')
             }
         })
+
+        Axios.post('/api/comment/getComments',variable)
+        .then(res => {
+            if(res.data.success){
+                setComments(res.data.comments)
+            }else{
+                alert('Failed to get comment ')
+            }
+        })
     },[])
+
+    const refreshComponent = (comment) => {
+        setComments(comments.concat(comment))
+    }
 
     
     if (Video.writer) {
-        const subscribeBtn = Video.writer._id !== localStorage.getItem('userId') && <Subscribe userTo={Video.writer._id} />
     return (
         <Row>
         <Col lg={18} xs={24}>
@@ -33,7 +48,7 @@ function VideoDetailPage(props) {
                 <video style={{ width: '100%' }} src={`http://localhost:5000/${Video.filePath}`} controls></video>
 
                 <List.Item
-                    actions={[subscribeBtn]}
+                    actions={[<LikeDislike video userId={localStorage.getItem('userId')} videoId={videoId} /> ,  <Subscribe userTo={Video.writer._id} />]}
                 >
                     <List.Item.Meta
                         avatar={<Avatar src={Video.writer && Video.writer.image} />}
@@ -42,7 +57,7 @@ function VideoDetailPage(props) {
                     />
                 </List.Item>
 
-                {/* <Comments CommentLists={CommentLists} postId={Video._id} refreshFunction={updateComment} /> */}
+                <Comment refreshComponent={refreshComponent} commentList={comments} postId={videoId}/>
 
             </div>
         </Col>
