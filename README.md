@@ -1,4 +1,4 @@
-# Youtbe_Clone_MERN
+# Youtube_Clone_MERN
 
 Use and learn MERN stack
 
