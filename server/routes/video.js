@@ -4,13 +4,13 @@ const { Video } = require("../models/Video");
 const { Subscriber } = require("../models/Subscriber");
 const multer = require('multer')
 const { auth } = require("../middleware/auth");
-var ffmpeg = require('fluent-ffmpeg');
+let ffmpeg = require('fluent-ffmpeg');
 
 //=================================
 //             Video
 //=================================
 
-var storage = multer.diskStorage({
+let storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'uploads/')
     },
@@ -26,7 +26,7 @@ var storage = multer.diskStorage({
     }
 })
 
-var upload = multer({ storage: storage }).single("file")
+let upload = multer({ storage: storage }).single("file")
 
 router.post('/uploadfiles', (req,res) => {
     // 비디오를 서버에 저장한다
@@ -65,13 +65,13 @@ router.post('/getSubscriptionVideos', (req,res) => {
     .exec(( err, SubscriberInfo) => {
         if(err) return res.status(400).send(err);
 
-        let subsvribedUser = [];
+        let subscribedUser = [];
 
         SubscriberInfo.map((Subscriber,index) => {
-            subsvribedUser.push(Subscriber.userTo)
+            subscribedUser.push(Subscriber.userTo)
         })
 
-        Video.find({ writer: { $in: subsvribedUser }})
+        Video.find({ writer: { $in: subscribedUser }})
         .populate('writer')
         .exec((err,videos) => {
             if (err) return res.status(400).send(err)
@@ -125,6 +125,13 @@ router.post('/thumbnail', (req,res) => {
 
 })
 
+router.post('/deleteVideo',(req,res)=>{
+    Video.findOneAndDelete({'_id':req.body.videoId})
+    .exec((err,video)=>{
+        if(err) return res.status(400).json({success:false, err})
+        return res.status(200).json({success:true,video})
+    })
+})
 
 
 module.exports = router;

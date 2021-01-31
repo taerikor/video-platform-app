@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import ReplyComment from './ReplyComment';
 import SingleComment from './SingleComment';
 
-function Comment({postId,commentList,refreshComponent}) {
+function Comment({postId,commentList,refreshComponent,filterState }) {
     const [comment,setComment] = useState('')
 
     const user = useSelector(state => state.user)
@@ -27,7 +27,6 @@ function Comment({postId,commentList,refreshComponent}) {
         Axios.post('/api/comment/saveComment', variable)
         .then(res => {
             if(res.data.success){
-                console.log('comment: ',res.data.result)
                 refreshComponent(res.data.result)
                 setComment('')
             }else{
@@ -44,10 +43,10 @@ function Comment({postId,commentList,refreshComponent}) {
      {/* commnet list */}
      {commentList && commentList.map((comment,index)=>(
          (!comment.responseTo &&
-            <>
-            <SingleComment refreshComponent={refreshComponent} key={index} comment={comment} postId={postId}/>
-            <ReplyComment parentCommentId={comment._id} postId={postId} refreshComponent={refreshComponent} commentList={commentList} />
-            </>
+            <React.Fragment key={index}>
+            <SingleComment refreshComponent={refreshComponent} key={index} comment={comment} postId={postId} filterState={filterState }/>
+            <ReplyComment parentCommentId={comment._id} postId={postId} refreshComponent={refreshComponent} commentList={commentList} filterState={filterState} />
+            </React.Fragment>
             )
      ))}
      {/* Root comment form*/}

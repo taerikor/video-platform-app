@@ -3,10 +3,11 @@ import { Comment, Avatar, Button, Input } from 'antd';
 import { useSelector } from 'react-redux';
 import Axios from 'axios';
 import LikeDislike from './LikeDislike'
+import Delete from './Delete';
 
 const { TextArea } = Input;
 
-function SingleComment({postId,comment,refreshComponent}) {
+function SingleComment({postId,comment,refreshComponent,filterState }) {
     const [openReply,setOpenReply] = useState(false)
     const [commentValue,setCommentValue] = useState('')
 
@@ -42,9 +43,21 @@ function SingleComment({postId,comment,refreshComponent}) {
     const onReplyClick = () => {
         setOpenReply(rev => !rev)
     }
-    const actions = [<LikeDislike  userId={localStorage.getItem('userId')} commentId={comment._id} />,
+
+    let actions = []
+
+    if(user.userData._id === comment.writer._id){
+        actions = [<LikeDislike  userId={localStorage.getItem('userId')} commentId={comment._id} />,
+        <span onClick={onReplyClick} key='comment-basic-reply-to'> Reply to </span>,
+        <Delete comment filterState={filterState} commentId={comment._id}/>
+    ]
+    }else {
+        actions =[<LikeDislike  userId={localStorage.getItem('userId')} commentId={comment._id} />,
         <span onClick={onReplyClick} key='comment-basic-reply-to'> Reply to </span>
     ]
+
+    }
+    
     return (
         <div>
              <Comment

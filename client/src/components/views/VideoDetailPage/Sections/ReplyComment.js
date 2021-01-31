@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import SingleComment from './SingleComment'
 
-function ReplyComment({commentList,postId,refreshComponent,parentCommentId}) {
+function ReplyComment({commentList,postId,refreshComponent,parentCommentId,filterState}) {
     const [childCommentNumber, setChildCommentNumber] = useState(0)
     const [OpenReplyComments, setOpenReplyComments] = useState(false)
 
@@ -23,14 +23,14 @@ function ReplyComment({commentList,postId,refreshComponent,parentCommentId}) {
 
     let renderReplyComment = (parentCommentId) => 
         commentList.map((comment, index) => (
-            <>
+            <React.Fragment key={index}>
           {  comment.responseTo === parentCommentId &&
-            <div style={{ width: '80%', marginLeft: '40px' }}>
-            <SingleComment refreshComponent={refreshComponent} key={index} comment={comment} postId={postId}/>
-            <ReplyComment parentCommentId={comment._id} postId={postId} refreshComponent={refreshComponent} commentList={commentList} />
+            <div  style={{ width: '80%', marginLeft: '40px' }}>
+            <SingleComment refreshComponent={refreshComponent} key={index} comment={comment} postId={postId} filterState={filterState}/>
+            <ReplyComment parentCommentId={comment._id} postId={postId} refreshComponent={refreshComponent} commentList={commentList} filterState={filterState}/>
             </div>
         }
-        </>
+        </React.Fragment>
         ))
     
 

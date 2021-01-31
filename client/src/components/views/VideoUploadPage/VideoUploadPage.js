@@ -25,6 +25,7 @@ function VideoUploadPage(props) {
     const [description,setDescription] = useState('');
     const [priv,setPriv] = useState(0);
     const [category,setCategory] = useState('Film & Anime')
+    
     const [filePath, setFilePath] = useState('')
     const [duration, setDuration] = useState('')
     const [thumbnail, setThumbnail] = useState('')

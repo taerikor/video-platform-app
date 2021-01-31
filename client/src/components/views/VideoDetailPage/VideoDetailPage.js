@@ -5,6 +5,7 @@ import SideVideo from './Sections/SideVideo';
 import Subscribe from './Sections/Subscribe';
 import Comment from './Sections/Comment';
 import LikeDislike from './Sections/LikeDislike';
+import Delete from './Sections/Delete';
 
 function VideoDetailPage(props) {
     const [Video,setVideo] = useState([])
@@ -38,9 +39,21 @@ function VideoDetailPage(props) {
     const refreshComponent = (comment) => {
         setComments(comments.concat(comment))
     }
+    const filterState = (array) => {
+        setComments(comments.filter(item => item._id !== array._id))
+ 
+     }
 
     
     if (Video.writer) {
+        let actions = []
+
+        if(localStorage.getItem('userId') === Video.writer._id ){
+            actions = [<LikeDislike video videoId={videoId} userId={localStorage.getItem('userId')}/> ,<Subscribe userTo={Video.writer._id} userFrom={localStorage.getItem('userId')} />,<Delete video videoId={videoId} />]
+        }else {
+            actions = [<LikeDislike video videoId={videoId} userId={localStorage.getItem('userId')}/> ,<Subscribe userTo={Video.writer._id} userFrom={localStorage.getItem('userId')} /> ]
+        }
+
     return (
         <Row>
         <Col lg={18} xs={24}>
@@ -48,7 +61,7 @@ function VideoDetailPage(props) {
                 <video style={{ width: '100%' }} src={`http://localhost:5000/${Video.filePath}`} controls></video>
 
                 <List.Item
-                    actions={[<LikeDislike video userId={localStorage.getItem('userId')} videoId={videoId} /> ,  <Subscribe userTo={Video.writer._id} />]}
+                    actions={actions}
                 >
                     <List.Item.Meta
                         avatar={<Avatar src={Video.writer && Video.writer.image} />}
@@ -57,7 +70,7 @@ function VideoDetailPage(props) {
                     />
                 </List.Item>
 
-                <Comment refreshComponent={refreshComponent} commentList={comments} postId={videoId}/>
+                <Comment filterState={filterState} refreshComponent={refreshComponent} commentList={comments} postId={videoId}/>
 
             </div>
         </Col>
